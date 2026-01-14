@@ -17,45 +17,32 @@ public class SolucaoArvore
         if (nums == null || nums.Length == 0)
             return null;
 
-        int maxIndex = EncontrarIndiceMaior(nums, 0, nums.Length - 1);
+        int maxVal = nums.Max();
+        int maxIndex = Array.IndexOf(nums, maxVal);
+        TreeNode root = new TreeNode(maxVal);
 
-        TreeNode root = new(nums[maxIndex]);
+        var leftElements = nums.Take(maxIndex)
+                               .OrderByDescending(x => x)
+                               .ToList();
+        root.Left = ConstruirGalhoLinear(leftElements);
 
-        if (maxIndex > 0)
-            root.Left = ConstruirGalho(nums, 0, maxIndex - 1);
-
-        if (maxIndex < nums.Length - 1)
-            root.Right = ConstruirGalho(nums, maxIndex + 1, nums.Length - 1);
+        var rightElements = nums.Skip(maxIndex + 1)
+                                .OrderByDescending(x => x)
+                                .ToList();
+        root.Right = ConstruirGalhoLinear(rightElements);
 
         return root;
     }
 
-    private TreeNode ConstruirGalho(int[] nums, int inicio, int fim)
+    private TreeNode ConstruirGalhoLinear(List<int> elements)
     {
-        if (inicio > fim)
+        if (elements == null || !elements.Any())
             return null;
 
-        int maxIndex = EncontrarIndiceMaior(nums, inicio, fim);
+        TreeNode node = new TreeNode(elements[0]);
 
-        TreeNode node = new(nums[maxIndex]);
-
-        if (maxIndex > inicio)
-            node.Left = ConstruirGalho(nums, inicio, maxIndex - 1);
-
-        if (maxIndex < fim)
-            node.Right = ConstruirGalho(nums, maxIndex + 1, fim);
+        node.Left = ConstruirGalhoLinear(elements.Skip(1).ToList());
 
         return node;
-    }
-
-    private int EncontrarIndiceMaior(int[] nums, int inicio, int fim)
-    {
-        int maxIndex = inicio;
-        for (int i = inicio + 1; i <= fim; i++)
-        {
-            if (nums[i] > nums[maxIndex])
-                maxIndex = i;
-        }
-        return maxIndex;
     }
 }
